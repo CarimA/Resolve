@@ -67,7 +67,7 @@ namespace Testing
             });
 
             circle = ShapePrimitives.Circle(new Vector2(400, 200), 60, 10);
-            rect = ShapePrimitives.BezelRectangle(new Vector2(60, 60), new Vector2(120, 120), 15);
+            rect = ShapePrimitives.BezelRectangle(new Vector2(60, 60), new Vector2(160, 220), 15);
 
             base.Initialize();
         }
@@ -140,7 +140,7 @@ namespace Testing
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            Action<Vector2, Vector2> drawLine = (p1, p2) => { DrawLine(spriteBatch, p1, p2); };
+            Action<Vector2, Vector2> drawLine = (p1, p2) => { DrawLine(spriteBatch, p1, p2, Color.White, 1); };
             Action<string, Vector2> drawString = (text, pos) => { };
 
             GraphicsDevice.Clear(Color.Black);
@@ -158,7 +158,7 @@ namespace Testing
             base.Draw(gameTime);
         }
 
-        void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
+        void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end, Color color, int thickness = 1)
         {
             Vector2 edge = end - start;
             // calculate angle to rotate line
@@ -171,9 +171,9 @@ namespace Testing
                     (int)start.X,
                     (int)start.Y,
                     (int)edge.Length(), //sb will strech the texture to fill this rectangle
-                    1), //width of line, change this to make thicker line
+                    thickness), //width of line, change this to make thicker line
                 null,
-                Color.White, //colour of line
+                color, //colour of line
                 angle,     //angle of line (calulated above)
                 new Vector2(0, 0), // point in line about which to rotate
                 SpriteEffects.None,

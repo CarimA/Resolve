@@ -7,5 +7,6 @@ namespace Resolve
         public bool WillIntersect;
         public bool AreIntersecting;
         public Vector2 MinimumTranslation;
+        public float IntersectionAngle;
     }
 }
