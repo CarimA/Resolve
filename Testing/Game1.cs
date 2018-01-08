@@ -66,8 +66,8 @@ namespace Testing
                 new Vector2(-10, 190)
             });
 
-            circle = ShapePrimitives.Circle(new Vector2(400, 200), 60, 16);
-            rect = ShapePrimitives.Rectangle(new Vector2(60, 60), new Vector2(120, 120));
+            circle = ShapePrimitives.Circle(new Vector2(400, 200), 60, 10);
+            rect = ShapePrimitives.BezelRectangle(new Vector2(60, 60), new Vector2(120, 120), 15);
 
             base.Initialize();
         }
@@ -110,7 +110,7 @@ namespace Testing
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             KeyboardState ks = Keyboard.GetState();
             Vector2 velocity = Vector2.Zero;
-            float speed = 200;
+            float speed = 90; // a link to the past link moves at 90 pixels per second!
             if (ks.IsKeyDown(Keys.W))
             {
                 velocity += new Vector2(0, -speed * deltaTime);

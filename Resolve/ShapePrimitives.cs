@@ -28,11 +28,23 @@ namespace Resolve
             return new Polygon(origin, points);
         }
 
-        public static Polygon Rectangle(Vector2 min, Vector2 max)
+        public static Polygon BezelRectangle(Vector2 min, Vector2 max, float bezelLength) => BezelRectangle(min.X, min.Y, max.X, max.Y, bezelLength);
+        public static Polygon BezelRectangle(float aX, float aY, float bX, float bY, float bezelLength)
         {
-            return Rectangle(min.X, min.Y, max.X, max.Y);
+            List<Vector2> points = new List<Vector2>();
+            points.Add(new Vector2(aX + bezelLength, aY));
+            points.Add(new Vector2(bX - bezelLength, aY));
+            points.Add(new Vector2(bX, aY + bezelLength));
+            points.Add(new Vector2(bX, bY - bezelLength));
+            points.Add(new Vector2(bX - bezelLength, bY));
+            points.Add(new Vector2(aX + bezelLength, bY));
+            points.Add(new Vector2(aX, bY - bezelLength));
+            points.Add(new Vector2(aX, aY + bezelLength));
+
+            return new Polygon(new Vector2(aX, aY), points);
         }
 
+        public static Polygon Rectangle(Vector2 min, Vector2 max) =>  Rectangle(min.X, min.Y, max.X, max.Y);
         public static Polygon Rectangle(float aX, float aY, float bX, float bY)
         {
             List<Vector2> points = new List<Vector2>();
