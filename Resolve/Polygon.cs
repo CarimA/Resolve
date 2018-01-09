@@ -61,13 +61,16 @@ namespace Resolve
         public void Move(List<IPolygon> polygons, Vector2 velocity)
         {
             Vector2 translation = velocity;
+            List<Vector2> minimumTranslations = new List<Vector2>();
+
             foreach (Polygon polygon in polygons)
             {
                 CollisionResult result = Simulate(polygon, velocity);
 
                 if (result.WillIntersect && this.IsTangible && polygon.IsTangible)
                 {
-                    translation += result.MinimumTranslation;
+                    minimumTranslations.Add(result.MinimumTranslation);
+                    //translation += result.MinimumTranslation;
                     //break;
                 }
 
@@ -78,6 +81,18 @@ namespace Resolve
                 }
             }
 
+            if (minimumTranslations.Count > 0)
+            {
+                if (minimumTranslations.Count == 1)
+                {
+                    translation += minimumTranslations.First();
+                }
+                else
+                {
+                    Vector2 average = new Vector2(minimumTranslations.Average(x => x.X), minimumTranslations.Average(x => x.Y));
+                    translation += average;
+                }
+            }
             Position += translation;
         }
 
