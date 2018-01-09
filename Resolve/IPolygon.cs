@@ -12,6 +12,7 @@ namespace Resolve
         Vector2 Origin { get; set; }
         List<Vector2> Points { get; }
         List<Vector2> Edges { get; }
+        RectangleF BoundingBox { get; }
 
         List<string> Tags { get; set; }
         object Data { get; set; }
@@ -34,7 +35,7 @@ namespace Resolve
 
         void SetCallback(Action<IPolygon, IPolygon> callback);
 
-        void Draw(Action<Vector2, Vector2> drawLine, Action<string, Vector2> drawString);
+        void Draw(Action<Vector2, Vector2, Color> drawLine, Action<string, Vector2> drawString);
         string ToString();
     }
 }

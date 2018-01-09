@@ -140,7 +140,7 @@ namespace Testing
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            Action<Vector2, Vector2> drawLine = (p1, p2) => { DrawLine(spriteBatch, p1, p2, Color.White, 1); };
+            Action<Vector2, Vector2, Color> drawLine = (p1, p2, color) => { DrawLine(spriteBatch, p1, p2, color, 1); };
             Action<string, Vector2> drawString = (text, pos) => { };
 
             GraphicsDevice.Clear(Color.Black);

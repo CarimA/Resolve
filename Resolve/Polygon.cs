@@ -11,8 +11,8 @@ namespace Resolve
         public Vector2 Origin { get; set; }
 
         public List<Vector2> Points { get; private set; }
-
         public List<Vector2> Edges { get; private set; }
+        public RectangleF BoundingBox { get; private set; }
 
         public List<string> Tags { get; set; }
         public object Data { get; set; }
@@ -46,6 +46,37 @@ namespace Resolve
                 }
                 Edges.Add(p2 - p1);
             }
+
+            // iterate over points and find lowest + highest
+            float minX = float.PositiveInfinity;
+            float minY = float.PositiveInfinity;
+            float maxX = float.NegativeInfinity;
+            float maxY = float.NegativeInfinity;
+
+            foreach (Vector2 point in Points)
+            {
+                if (point.X < minX)
+                {
+                    minX = point.X;
+                }
+
+                if (point.Y < minY)
+                {
+                    minY = point.Y;
+                }
+
+                if (point.X > maxX)
+                {
+                    maxX = point.X;
+                }
+
+                if (point.Y > maxY)
+                {
+                    maxY = point.Y;
+                }
+            }
+
+            BoundingBox = new RectangleF(minX, minY, maxX - minX, maxY - minY);
 
             // calculate center
             float tX = 0, tY = 0;
@@ -237,8 +268,15 @@ namespace Resolve
             OnCollide = callback;
         }
 
-        public void Draw(Action<Vector2, Vector2> drawLine, Action<string, Vector2> drawString)
+        public void Draw(Action<Vector2, Vector2, Color> drawLine, Action<string, Vector2> drawString)
         {
+            // draw box
+            drawLine(Origin + BoundingBox.TopLeft, Origin + BoundingBox.TopRight, Color.Red);
+            drawLine(Origin + BoundingBox.TopRight, Origin + BoundingBox.BottomRight, Color.Red);
+            drawLine(Origin + BoundingBox.BottomRight, Origin + BoundingBox.BottomLeft, Color.Red);
+            drawLine(Origin + BoundingBox.TopLeft, Origin + BoundingBox.BottomLeft, Color.Red);
+
+            // draw polygon
             Vector2 p1, p2;
             for (int i = 0; i < Points.Count; i++)
             {
@@ -251,11 +289,11 @@ namespace Resolve
                 {
                     p2 = Points[i + 1];
                 }
-                drawLine(Origin + p1, Origin + p2);
+                drawLine(Origin + p1, Origin + p2, Color.Pink);
             }
 
-            drawLine(Center - new Vector2(5), Center + new Vector2(5));
-            drawLine(Center - new Vector2(5, -5), Center + new Vector2(5, -5));
+            drawLine(Center - new Vector2(5), Center + new Vector2(5), Color.Yellow);
+            drawLine(Center - new Vector2(5, -5), Center + new Vector2(5, -5), Color.Yellow);
 
             drawString("poly", Center);
         }
