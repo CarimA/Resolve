@@ -170,34 +170,6 @@ namespace Resolve
             return result;
         }
 
-        private int orientation(Vector2 p, Vector2 q, Vector2 r)
-        {
-            float val = (q.Y - p.Y) * (r.X - q.X) -
-                      (q.X - p.X) * (r.Y - q.Y);
-
-            if (val == 0) return 0;  // colinear
-
-            return (val > 0) ? 1 : 2; // clock or counterclock wise
-        }
-
-        private bool doLineSegmentsIntersect(Vector2 p1, Vector2 p2, Vector2 q1, Vector2 q2)
-        {
-            int o1 = orientation(p1, q1, p2);
-            int o2 = orientation(p1, q1, q2);
-            int o3 = orientation(p2, q2, p1);
-            int o4 = orientation(p2, q2, q1);
-
-            // the lines are never going to be colinear,
-            // so no need to check for edge cases.
-
-            if (o1 != o2 && o3 != o4)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         // Calculate the projection of a polygon on an axis and returns it as a [min, max] interval
         private void projectPolygon(Vector2 axis, IPolygon polygon, ref float min, ref float max)
         {
