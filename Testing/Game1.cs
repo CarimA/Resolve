@@ -20,11 +20,10 @@ namespace Testing
         Vector2 position = Vector2.Zero;
 
         Polygon poly1;
-        Polygon poly2;
-        Polygon poly3;
 
-        Polygon circle;
-        Polygon rect;
+        Quadtree<Polygon> world;
+
+        MouseState lastMouse;
 
         public Game1()
         {
@@ -41,33 +40,56 @@ namespace Testing
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            IsMouseVisible = true;
+
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.ApplyChanges();
+
+            world = new Quadtree<Polygon>(new RectangleF(0, 0, 800, 600));
 
             poly1 = new Polygon(Vector2.Zero, new List<Vector2>()
             {
-                new Vector2(100, 0),
-                new Vector2(150, 50),
-                new Vector2(100, 150),
-                new Vector2(0, 100)
+                new Vector2(25, 0),
+                new Vector2(38, 12),
+                new Vector2(25, 38),
+                new Vector2(0, 25)
             });
 
-            poly2 = new Polygon(new Vector2(80, 80), new List<Vector2>()
+            world.Insert(new Polygon(new Vector2(80, 80), new List<Vector2>()
             {
                 new Vector2(50, 50),
                 new Vector2(100, 0),
                 new Vector2(150, 150)
-            });
+            }));
 
-            poly3 = new Polygon(new Vector2(400, 200), new List<Vector2>()
+            world.Insert(new Polygon(new Vector2(400, 200), new List<Vector2>()
             {
                 new Vector2(0, 50),
                 new Vector2(50, 0),
                 new Vector2(150, 80),
                 new Vector2(160, 200),
                 new Vector2(-10, 190)
-            });
+            }));
 
-            circle = ShapePrimitives.Circle(new Vector2(400, 200), 60, 10);
-            rect = ShapePrimitives.BezelRectangle(new Vector2(60, 60), new Vector2(160, 220), 15);
+            world.Insert(ShapePrimitives.Circle(new Vector2(600, 200), 60, 10));
+            world.Insert(ShapePrimitives.BezelRectangle(new Vector2(60, 60), new Vector2(160, 220), 15));
+
+
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(620, 200), new Vector2(660, 230)));
+
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(0, 400), new Vector2(30, 430)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(30, 400), new Vector2(60, 430)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(60, 400), new Vector2(90, 430)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(90, 400), new Vector2(120, 430)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(120, 400), new Vector2(150, 430)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(150, 400), new Vector2(180, 430)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(0, 430), new Vector2(30, 460)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(30, 430), new Vector2(60, 460)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(60, 430), new Vector2(90, 460)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(90, 430), new Vector2(120, 460)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(120, 430), new Vector2(150, 460)));
+            world.Insert(ShapePrimitives.Rectangle(new Vector2(150, 430), new Vector2(180, 460)));
 
             base.Initialize();
         }
@@ -107,6 +129,13 @@ namespace Testing
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            MouseState mouse = Mouse.GetState();
+            if (mouse.LeftButton == ButtonState.Pressed && lastMouse.LeftButton == ButtonState.Released)
+            {
+                world.Insert(ShapePrimitives.BezelRectangle(new Vector2(mouse.X, mouse.Y), new Vector2(mouse.X + 20, mouse.Y + 20), 5));
+            }
+            lastMouse = mouse;
+
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             KeyboardState ks = Keyboard.GetState();
             Vector2 velocity = Vector2.Zero;
@@ -127,8 +156,17 @@ namespace Testing
             {
                 velocity += new Vector2(speed * deltaTime, 0);
             }
-            
-            poly1.Move(new List<IPolygon>() { poly2, poly3, circle, rect }, velocity);
+
+            world.ClearDebugTag();
+            List<Polygon> polys = world.Retrieve(new RectangleF(poly1.Origin.X + poly1.BoundingBox.Left, poly1.Origin.Y + poly1.BoundingBox.Top, poly1.BoundingBox.Width, poly1.BoundingBox.Height));
+
+            foreach (IPolygon poly in polys)
+            {
+                poly.AddTag("debug");
+            }
+
+            Window.Title = polys.Count.ToString();
+            poly1.Move(polys, velocity);
 
 
             base.Update(gameTime);
@@ -146,12 +184,11 @@ namespace Testing
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
-            
+
+            world.Draw(drawLine, drawString);
+
+
             poly1.Draw(drawLine, drawString);
-            poly2.Draw(drawLine, drawString);
-            poly3.Draw(drawLine, drawString);
-            circle.Draw(drawLine, drawString);
-            rect.Draw(drawLine, drawString);
 
             spriteBatch.End();
 

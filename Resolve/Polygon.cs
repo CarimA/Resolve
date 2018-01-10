@@ -7,12 +7,15 @@ namespace Resolve
 {
     public class Polygon : IPolygon
     {
+        const int INFLATE = 10;
+
         public Vector2 Position { get { return Origin; } set { Origin = value; } }
         public Vector2 Origin { get; set; }
 
         public List<Vector2> Points { get; private set; }
         public List<Vector2> Edges { get; private set; }
         public RectangleF BoundingBox { get; private set; }
+        public RectangleF InflatedBoundingBox { get; private set; }
 
         public List<string> Tags { get; set; }
         public object Data { get; set; }
@@ -78,6 +81,9 @@ namespace Resolve
 
             BoundingBox = new RectangleF(minX, minY, maxX - minX, maxY - minY);
 
+            InflatedBoundingBox = new RectangleF(BoundingBox.X - INFLATE, BoundingBox.Y - INFLATE, 
+                BoundingBox.Width + (INFLATE * 2), BoundingBox.Height + (INFLATE * 2));
+
             // calculate center
             float tX = 0, tY = 0;
             foreach (Vector2 point in Points)
@@ -89,26 +95,32 @@ namespace Resolve
             Center = new Vector2(tX / (float)Points.Count, tY / (float)Points.Count);
         }
 
-        public void Move(List<IPolygon> polygons, Vector2 velocity)
+        public void Move<T>(List<T> polygons, Vector2 velocity) where T: IPolygon
         {
             Vector2 translation = velocity;
             List<Vector2> minimumTranslations = new List<Vector2>();
 
-            foreach (Polygon polygon in polygons)
+            InflatedBoundingBox.Set(new Vector2(Origin.X - INFLATE, Origin.Y - INFLATE));
+
+            foreach (T polygon in polygons)
             {
-                CollisionResult result = Simulate(polygon, velocity);
-
-                if (result.WillIntersect && this.IsTangible && polygon.IsTangible)
+                // don't do work that doesn't need to be done.
+                if (this.InflatedBoundingBox.Intersects(polygon.InflatedBoundingBox))
                 {
-                    minimumTranslations.Add(result.MinimumTranslation);
-                    //translation += result.MinimumTranslation;
-                    //break;
-                }
+                    CollisionResult result = Simulate(polygon, velocity);
 
-                if (result.AreIntersecting)
-                {
-                    this.OnCollide?.Invoke(this, polygon);
-                    polygon.OnCollide?.Invoke(polygon, this);
+                    if (result.WillIntersect && this.IsTangible && polygon.IsTangible)
+                    {
+                        minimumTranslations.Add(result.MinimumTranslation);
+                        //translation += result.MinimumTranslation;
+                        //break;
+                    }
+
+                    if (result.AreIntersecting)
+                    {
+                        this.OnCollide?.Invoke(this, polygon);
+                        polygon.OnCollide?.Invoke(polygon, this);
+                    }
                 }
             }
 
@@ -127,7 +139,7 @@ namespace Resolve
             Position += translation;
         }
 
-        public CollisionResult Simulate(IPolygon polygon, Vector2 velocity)
+        public CollisionResult Simulate<T>(T polygon, Vector2 velocity) where T : IPolygon
         {
             CollisionResult result = new CollisionResult();
             result.AreIntersecting = true;
@@ -271,13 +283,21 @@ namespace Resolve
         public void Draw(Action<Vector2, Vector2, Color> drawLine, Action<string, Vector2> drawString)
         {
             // draw box
-            drawLine(Origin + BoundingBox.TopLeft, Origin + BoundingBox.TopRight, Color.Red);
-            drawLine(Origin + BoundingBox.TopRight, Origin + BoundingBox.BottomRight, Color.Red);
-            drawLine(Origin + BoundingBox.BottomRight, Origin + BoundingBox.BottomLeft, Color.Red);
-            drawLine(Origin + BoundingBox.TopLeft, Origin + BoundingBox.BottomLeft, Color.Red);
+            drawLine(Origin + InflatedBoundingBox.TopLeft, Origin + InflatedBoundingBox.TopRight, Color.Yellow * 0.5f);
+            drawLine(Origin + InflatedBoundingBox.TopRight, Origin + InflatedBoundingBox.BottomRight, Color.Yellow * 0.5f);
+            drawLine(Origin + InflatedBoundingBox.BottomRight, Origin + InflatedBoundingBox.BottomLeft, Color.Yellow * 0.5f);
+            drawLine(Origin + InflatedBoundingBox.TopLeft, Origin + InflatedBoundingBox.BottomLeft, Color.Yellow * 0.5f);
+
+            drawLine(Origin + BoundingBox.TopLeft, Origin + BoundingBox.TopRight, Color.Red * 0.5f);
+            drawLine(Origin + BoundingBox.TopRight, Origin + BoundingBox.BottomRight, Color.Red * 0.5f);
+            drawLine(Origin + BoundingBox.BottomRight, Origin + BoundingBox.BottomLeft, Color.Red * 0.5f);
+            drawLine(Origin + BoundingBox.TopLeft, Origin + BoundingBox.BottomLeft, Color.Red * 0.5f);
 
             // draw polygon
             Vector2 p1, p2;
+
+            Color c = this.HasTag("debug") ? Color.White : Color.Blue;
+
             for (int i = 0; i < Points.Count; i++)
             {
                 p1 = Points[i];
@@ -289,7 +309,7 @@ namespace Resolve
                 {
                     p2 = Points[i + 1];
                 }
-                drawLine(Origin + p1, Origin + p2, Color.Pink);
+                drawLine(Origin + p1, Origin + p2, c);
             }
 
             drawLine(Center - new Vector2(5), Center + new Vector2(5), Color.Yellow);

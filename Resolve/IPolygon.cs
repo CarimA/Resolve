@@ -13,6 +13,7 @@ namespace Resolve
         List<Vector2> Points { get; }
         List<Vector2> Edges { get; }
         RectangleF BoundingBox { get; }
+        RectangleF InflatedBoundingBox { get; }
 
         List<string> Tags { get; set; }
         object Data { get; set; }
@@ -21,8 +22,8 @@ namespace Resolve
         Vector2 Center { get; }
         bool IsTangible { get; set; }
 
-        void Move(List<IPolygon> polygons, Vector2 vector);
-        CollisionResult Simulate(IPolygon polygon, Vector2 vector);
+        void Move<T>(List<T> polygons, Vector2 vector) where T : IPolygon;
+        CollisionResult Simulate<T>(T polygon, Vector2 vector) where T : IPolygon;
 
         void AddTags(params string[] tags);
         void AddTag(string tag);

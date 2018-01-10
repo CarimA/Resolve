@@ -26,12 +26,12 @@ SOFTWARE.
 #endregion License
 
 using System;
+using Microsoft.Xna.Framework;
 
 /* This is a modified Monogame Rectangle class to be used with floats instead of ints */
 
-namespace Microsoft.Xna.Framework
+namespace Resolve
 {
-
     public struct RectangleF : IEquatable<RectangleF>
     {
         #region Private Fields
@@ -141,6 +141,12 @@ namespace Microsoft.Xna.Framework
         {
             X += offsetX;
             Y += offsetY;
+        }
+
+        public void Set(Vector2 position)
+        {
+            X = position.X;
+            Y = position.Y;
         }
 
         public Vector2 Center

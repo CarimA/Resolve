@@ -31,15 +31,16 @@ namespace Resolve
         public static Polygon BezelRectangle(Vector2 min, Vector2 max, float bezelLength) => BezelRectangle(min.X, min.Y, max.X, max.Y, bezelLength);
         public static Polygon BezelRectangle(float aX, float aY, float bX, float bY, float bezelLength)
         {
+            // todo: fix origin assumption flaw
             List<Vector2> points = new List<Vector2>();
-            points.Add(new Vector2(aX + bezelLength, aY));
-            points.Add(new Vector2(bX - bezelLength, aY));
-            points.Add(new Vector2(bX, aY + bezelLength));
-            points.Add(new Vector2(bX, bY - bezelLength));
-            points.Add(new Vector2(bX - bezelLength, bY));
-            points.Add(new Vector2(aX + bezelLength, bY));
-            points.Add(new Vector2(aX, bY - bezelLength));
-            points.Add(new Vector2(aX, aY + bezelLength));
+            points.Add(new Vector2(bezelLength, 0));
+            points.Add(new Vector2(bX - aX - bezelLength, 0));
+            points.Add(new Vector2(bX - aX, bezelLength));
+            points.Add(new Vector2(bX - aX, bY - aY - bezelLength));
+            points.Add(new Vector2(bX - aX - bezelLength, bY - aY));
+            points.Add(new Vector2(bezelLength, bY - aY));
+            points.Add(new Vector2(0, bY - aY - bezelLength));
+            points.Add(new Vector2(0, bezelLength));
 
             return new Polygon(new Vector2(aX, aY), points);
         }
@@ -48,11 +49,11 @@ namespace Resolve
         public static Polygon Rectangle(float aX, float aY, float bX, float bY)
         {
             List<Vector2> points = new List<Vector2>();
-            points.Add(new Vector2(aX, aY));
-            points.Add(new Vector2(bX, aY));
-            points.Add(new Vector2(bX, bY));
-            points.Add(new Vector2(aX, bY));
-            return new Polygon(points.First(), points);
+            points.Add(new Vector2(0, 0));
+            points.Add(new Vector2(bX - aX, 0));
+            points.Add(new Vector2(bX - aX, bY - aY));
+            points.Add(new Vector2(0, bY - aY));
+            return new Polygon(new Vector2(aX, aY), points);
         }
     }
 }

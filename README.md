@@ -10,7 +10,7 @@ Any form of memory management, optimisations (when to invoke the collider) or an
 
 Resolve also provides a helpful primitives class with methods to create polygons of common shapes.
 
-Resolve is made with Monogame in mind and uses the Monogame Vector2 class, however it is very simple to remove all references and use with whatever else.
+Resolve is made with Monogame in mind and uses the Monogame Vector2 and Color classes, however it is very simple to remove all references and use with whatever else.
 
 ## Why?
 
