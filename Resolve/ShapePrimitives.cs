@@ -55,5 +55,15 @@ namespace Resolve
             points.Add(new Vector2(0, bY - aY));
             return new Polygon(new Vector2(aX, aY), points);
         }
+
+        public static Polygon Rectangle(Vector2 origin, float width, float height) // blech, I'll figure something robust out later
+        {
+            List<Vector2> points = new List<Vector2>();
+            points.Add(new Vector2(0, 0));
+            points.Add(new Vector2(width, 0));
+            points.Add(new Vector2(width, height));
+            points.Add(new Vector2(0, height));
+            return new Polygon(origin, points);
+        }
     }
 }
