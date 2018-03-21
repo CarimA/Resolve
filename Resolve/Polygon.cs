@@ -132,13 +132,33 @@ namespace Resolve
                 }
                 else
                 {
-                    Vector2 average = new Vector2(minimumTranslations.Average(x => x.X), minimumTranslations.Average(x => x.Y));
+                    //Vector2 average = new Vector2(minimumTranslations.Min(x => x.X), minimumTranslations.Min(x => x.Y));
+                    Vector2 average = GetFurthestFromOrigin(minimumTranslations);
                     translation += average;
+                    //translation += (new Vector2(Math.Sign(average.X), Math.Sign(average.Y)) * 0.1f);
                 }
             }
             Position += translation;
         }
 
+        private Vector2 GetFurthestFromOrigin(IEnumerable<Vector2> points)
+        {
+            float x = 0;
+            float y = 0;
+            foreach (Vector2 point in points)
+            {
+                if (Math.Abs(point.X) > Math.Abs(x))
+                {
+                    x = point.X;
+                }
+                if (Math.Abs(point.Y) > Math.Abs(y))
+                {
+                    y = point.Y;
+                }
+            }
+            return new Vector2(x, y);
+        }
+        
         public CollisionResult Simulate<T>(T polygon, Vector2 velocity) where T : IPolygon
         {
             CollisionResult result = new CollisionResult();
