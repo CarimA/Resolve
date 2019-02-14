@@ -69,7 +69,7 @@ namespace Resolve
             bottomRightBounds = new RectangleF(boundaries.Left + halfWidth, boundaries.Top + halfHeight, halfWidth, halfHeight);
 
             topBounds = new RectangleF(boundaries.Left, boundaries.Top, boundaries.Width, halfHeight);
-            bottomBounds = new RectangleF(bottomBounds.Left, bottomBounds.Top + halfHeight, boundaries.Width, halfHeight);
+            bottomBounds = new RectangleF(boundaries.Left, boundaries.Top + halfHeight, boundaries.Width, halfHeight);
             leftBounds = new RectangleF(boundaries.Left, boundaries.Top, halfWidth, boundaries.Height);
             rightBounds = new RectangleF(boundaries.Left + halfWidth, boundaries.Top, halfWidth, boundaries.Height);
         }
